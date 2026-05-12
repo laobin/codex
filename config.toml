@@ -1,0 +1,45 @@
+model = "gpt-5.5"
+model_reasoning_effort = "high"
+
+# User working preference:
+# For long-running development, testing, evaluation, or debugging tasks,
+# Codex must report progress at least once every 3 minutes.
+#
+# Local tools:
+# MySQL client executable: C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe
+[projects.'C:\Users\zhang']
+trust_level = "trusted"
+
+[projects.'C:\Users\zhang\Desktop']
+trust_level = "trusted"
+
+[projects.'d:\code\langchain4j113']
+trust_level = "trusted"
+
+[projects.'c:\users\binzai']
+trust_level = "trusted"
+
+[windows]
+sandbox = "elevated"
+
+[notice.model_migrations]
+"gpt-5.3-codex" = "gpt-5.4"
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@latest"]
+
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
+
+[mcp_servers.tapd-mcp]
+command = "D:/python3/Scripts/uvx.exe"
+args = ["--from", "mcp-server-tapd==8.0.74", "mcp-server-tapd"]
+env = { TAPD_ACCESS_TOKEN = "${TAPD_ACCESS_TOKEN}", TAPD_API_BASE_URL = "https://api.tapd.cn", TAPD_BASE_URL = "https://www.tapd.cn", NO_PROXY = "*", no_proxy = "*" }
+
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]

@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "auto-dev progress",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "feature_name",
+    "mode",
+    "created_at",
+    "updated_at",
+    "current_stage",
+    "last_success_stage",
+    "scope",
+    "plan_review_round",
+    "code_review_round",
+    "test_fix_round",
+    "current_status",
+    "upgraded_from",
+    "restart_from",
+    "blocking_issues",
+    "stage_history"
+  ],
+  "properties": {
+    "feature_name": { "type": "string", "minLength": 1 },
+    "mode": { "enum": ["fast", "standard", "full"] },
+    "created_at": { "type": "string" },
+    "updated_at": { "type": "string" },
+    "current_stage": {
+      "enum": [
+        "init",
+        "context-scan",
+        "plan-write",
+        "plan-review",
+        "code-implement",
+        "code-review",
+        "test-design",
+        "test-run",
+        "summary",
+        "done"
+      ]
+    },
+    "last_success_stage": {
+      "anyOf": [
+        { "type": "null" },
+        {
+          "enum": [
+            "init",
+            "context-scan",
+            "plan-write",
+            "plan-review",
+            "code-implement",
+            "code-review",
+            "test-design",
+            "test-run",
+            "summary"
+          ]
+        }
+      ]
+    },
+    "scope": { "type": ["string", "null"] },
+    "plan_review_round": { "type": "integer", "minimum": 0 },
+    "code_review_round": { "type": "integer", "minimum": 0 },
+    "test_fix_round": { "type": "integer", "minimum": 0 },
+    "current_status": {
+      "enum": ["running", "pending_fix", "manual_required", "completed", "upgraded"]
+    },
+    "upgraded_from": {
+      "anyOf": [
+        { "type": "null" },
+        { "enum": ["fast", "standard"] }
+      ]
+    },
+    "restart_from": {
+      "anyOf": [
+        { "type": "null" },
+        { "enum": ["plan-write", "code-implement"] }
+      ]
+    },
+    "blocking_issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["stage", "severity", "description", "status"],
+        "properties": {
+          "stage": { "type": "string" },
+          "severity": { "enum": ["P0", "P1", "P2", "P3"] },
+          "description": { "type": "string" },
+          "status": { "enum": ["open", "resolved", "blocked"] }
+        }
+      }
+    },
+    "stage_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["stage", "status", "time"],
+        "properties": {
+          "stage": { "type": "string" },
+          "status": { "type": "string" },
+          "time": { "type": "string" }
+        }
+      }
+    }
+  }
+}

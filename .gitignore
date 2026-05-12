@@ -1,0 +1,32 @@
+# Codex runtime and local state
+auth.json
+history.jsonl
+session_index.jsonl
+installation_id
+cap_sid
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.log
+models_cache.json
+
+# Runtime directories
+.sandbox/
+.sandbox-bin/
+.sandbox-secrets/
+.tmp/
+tmp/
+cache/
+log/
+sessions/
+sqlite/
+backups/
+vendor_imports/
+
+# Local-only backups
+*.bak
+*.bak-*
+
+# OS/editor noise
+.DS_Store
+Thumbs.db

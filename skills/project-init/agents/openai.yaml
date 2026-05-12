@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Init"
+  short_description: "填充项目 AI 上下文文档"
+  default_prompt: "Use $project-init to scan this repository and populate AI_DOC project context documents."

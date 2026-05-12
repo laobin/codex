@@ -1,0 +1,4 @@
+interface:
+  display_name: "Solution Review"
+  short_description: "Review a solution doc, write a review file, and avoid code edits"
+  default_prompt: "Use $solution-review to review this technical solution, write the review to a sibling review file, and do not modify the original doc or code."

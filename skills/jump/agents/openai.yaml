@@ -1,0 +1,7 @@
+interface:
+  display_name: "Jump"
+  short_description: "Enter an existing project workspace"
+  default_prompt: "Use $jump to resolve the target existing project directory and continue the task in that workspace."
+
+policy:
+  allow_implicit_invocation: true

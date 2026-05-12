@@ -1,0 +1,4 @@
+interface:
+  display_name: "Function Init"
+  short_description: "填充功能级 AI 模块文档"
+  default_prompt: "Use $function-init to initialize AI_DOC/modules docs for a specific business function."
