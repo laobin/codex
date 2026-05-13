@@ -6,6 +6,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 $preferredRoots = @(
+    "E:\code",
     "D:\code",
     "C:\Users\zhang"
 )

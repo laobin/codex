@@ -4,11 +4,16 @@ history.jsonl
 session_index.jsonl
 installation_id
 cap_sid
+.codex-global-state.json
+.personality_migration
+version.json
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
 *.log
 models_cache.json
+config.toml
+config.toml.bak-*
 
 # Runtime directories
 .sandbox/
@@ -22,6 +27,7 @@ sessions/
 sqlite/
 backups/
 vendor_imports/
+ambient-suggestions/
 
 # Local-only backups
 *.bak

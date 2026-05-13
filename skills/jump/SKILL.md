@@ -25,6 +25,7 @@ Turn a natural-language request such as "进入 all-in-ai 项目" or "去 d/code
 - Prefer explicit absolute paths from the prompt.
 - Normalize drive-relative Windows inputs like `d:code/foo` to `D:\code\foo`.
 - If the prompt names a project without a full path, first search common workspace roots:
+  - `E:\code`
   - `D:\code`
   - `C:\Users\zhang`
 - Prefer an exact directory-name match over fuzzy matches.
