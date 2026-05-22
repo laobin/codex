@@ -1,6 +1,6 @@
 ---
 name: test-run-lite
-description: 根据关键测试场景执行测试，记录最小必要证据，输出测试执行报告和阶段结论，结果写入对应功能目录的 5-test-run-lite.md。当用户说"执行测试"、"跑测试"、"test-run"时触发。
+description: 根据关键测试场景执行测试，记录最小必要证据，输出测试执行报告和阶段结论。在当前 scope 下读取测试设计，输出 5-test-run-lite.md 到当前 scope。当用户说"执行测试"、"跑测试"、"test-run"时触发。
 ---
 
 # 关键测试执行
@@ -8,6 +8,17 @@ description: 根据关键测试场景执行测试，记录最小必要证据，�
 ## 目标
 
 执行关键测试场景并记录详细证据，判断当前改动是否满足需求目标或需要回退。
+
+## 工作 scope
+
+本技能在"当前 scope 目录"下读写：
+
+| 模式 | 当前 scope | 参照文档 | 输出 |
+|---|---|---|---|
+| feature 根 | `AI_DOC/features/<功能名>/` | `4-test-design-lite.md`、`3-code-review.md`、`1-plan.md` | `<scope>/5-test-run-lite.md` |
+| PRD 产物 | `AI_DOC/features/<功能名>/deliverables/<n>-产物/` | 当前 scope 的 `4-test-design-lite.md`、`3-code-review.md`、`1-plan.md`、`README.md`；同时可回看 feature 根的 `blueprint.md` 的集成验收 | `<scope>/5-test-run-lite.md` |
+
+fast 通道无测试设计时，使用 `3-code-review.md` 和 scope 推导 1 到 3 个关键场景。
 
 ## 门禁
 
@@ -23,17 +34,11 @@ description: 根据关键测试场景执行测试，记录最小必要证据，�
 - 数据库结果无法验证。
 - 日志或副作用无法验证，而结论依赖这些证据。
 
-返回上游：
-
-- 测试暴露方案问题：返回 `plan-write` / `plan-review`。
-- 测试暴露实现问题：返回 `code-implement` / `code-review`。
-- 测试设计不可执行：返回 `test-design-lite`。
+暂停时记录阻塞原因和缺失证据，由调用方决定回到哪一阶段。
 
 ## 工作重点
 
-可以参考对应功能目录下的 `4-test-design-lite.md`、`3-code-review.md` 和 `1-plan.md`；fast 通道无测试设计时，使用 `3-code-review.md` 和 scope 推导 1 到 3 个关键场景。
-
-结论必须有详细证据支撑。证据不足只能写“待确认”，不能声称通过。没有详细证据，不得把结论写为通过。
+结论必须有详细证据支撑。证据不足只能写"待确认"，不能声称通过。没有详细证据，不得把结论写为通过。
 
 ### 测试环境准备
 
@@ -77,7 +82,7 @@ description: 根据关键测试场景执行测试，记录最小必要证据，�
 
 ## 输出
 
-写入：`AI_DOC/features/<功能名>/5-test-run-lite.md`
+写入：`<scope>/5-test-run-lite.md`
 
 报告必须包含：
 
@@ -91,4 +96,4 @@ description: 根据关键测试场景执行测试，记录最小必要证据，�
 
 ## 完成后建议
 
-独立触发本技能时，只提示下一步；被 auto-dev 流程调用时，返回主流程继续调度。通过时直接说明验证结论；失败或待确认时建议回到对应上游阶段。
+独立触发本技能时，只提示下一步；被编排流程调用时，返回主流程继续调度。通过时直接说明验证结论；失败或待确认时建议回到对应上游阶段。

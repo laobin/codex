@@ -1,0 +1,4 @@
+interface:
+  display_name: "接口文档生成"
+  short_description: "按照固定模板生成清晰规范并且方便前后端对接的接口文档"
+  default_prompt: "请根据以下接口信息生成接口文档，格式包含简要描述、请求URL、请求方式、Header、请求参数、响应参数、成功返回示例、失败返回示例和备注。"

@@ -139,49 +139,14 @@ AI_DOC/batch/<批次名>/batch-plan.md
 
 ### 8. 状态记录
 
-维护：
+维护：`AI_DOC/batch/<批次名>/batch-progress.json`
 
-```text
-AI_DOC/batch/<批次名>/batch-progress.json
-```
+**完整字段定义、`verification_level`、`failure_type`、`recommended_next_action` 等枚举见 `skills/auto-dev/PROGRESS_SCHEMA.md §4`**。本流程在该 schema 基础上：
 
-文件可以包含：
-
-```json
-{
-  "batch_name": "<批次名>",
-  "mode": "batch",
-  "current_status": "running",
-  "base_branch": "<开始分支>",
-  "base_commit": "<开始commit>",
-  "batch_branch": "feature/batch-<批次名>",
-  "recommended_next_action": "continue-current-flow",
-  "reason": "批处理正在执行",
-  "needs_user_decision": false,
-  "items": [
-    {
-      "id": "R1",
-      "feature_name": "<功能名>",
-      "mode": "fast|standard|full",
-      "status": "pending|running|completed|blocked|failed",
-      "verification_level": "V0|V1|V2|V3",
-      "failure_type": null,
-      "recommended_next_action": "continue-current-flow|auto-dev-standard|auto-dev-full|test-run-lite|bug-fix|fix-blocker|merge-check|manual-review|test-request-mail|none",
-      "reason": null,
-      "needs_user_decision": false,
-      "branch": "feature/<功能名>",
-      "changed_files": [],
-      "feature_doc_dir": "AI_DOC/features/<功能名>/",
-      "blocking_reason": null,
-      "decision_notes": [],
-      "verification_result": null,
-      "merge_status": "not_merged|merged_to_batch|left_on_feature_branch"
-    }
-  ]
-}
-```
-
-每完成、阻塞或失败一个需求，都立即更新。
+- 批次层维护 `batch_name`、`base_branch`、`base_commit`、`batch_branch`、`current_status`、`recommended_next_action`、`reason`、`needs_user_decision`。
+- `items[]` 每条对应一个子需求，按 schema §4 字段填写。
+- 每完成、阻塞或失败一个需求，立即更新对应 `items[n]`。
+- 子需求 `items[n].mode` 升级时（升级接管场景），更新 `mode` 字段但不重新计入 failure。
 
 ## 输出
 

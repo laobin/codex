@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: 对代码改动进行后端事故风险评审，结果写入对应功能目录的 3-code-review.md。当用户说"代码评审"、"review代码"时触发。
+description: 对代码改动进行事故风险评审。在当前 scope 下读取方案与评审作为参照，输出评审报告。PRD 模式下额外回看 feature 根 blueprint.md 检查全局约束遵守与产物契约边界。当用户说"代码评审"、"review代码"时触发。
 ---
 
 # 代码评审
@@ -9,16 +9,29 @@ description: 对代码改动进行后端事故风险评审，结果写入对应�
 
 独立判断本次代码改动是否存在会导致线上事故、数据错误、安全问题或无法验证的风险。
 
+## 工作 scope
+
+本技能在"当前 scope 目录"下读写：
+
+| 模式 | 当前 scope | 参照文档 | 输出 |
+|---|---|---|---|
+| feature 根 | `AI_DOC/features/<功能名>/` | `0-context.md`、`1-plan.md`、`2-plan-review.md`、历史 `3-code-review.md` | `<scope>/3-code-review.md` |
+| PRD 产物 | `AI_DOC/features/<功能名>/deliverables/<n>-产物/` | 当前 scope 的 `README.md`、`1-plan.md`、`2-plan-review.md`、历史 `3-code-review.md`；同时回看 feature 根的 `blueprint.md` | `<scope>/3-code-review.md` |
+
+PRD 产物模式下评审范围限定在本产物的职责边界：本产物的暴露契约实现与支撑它的内部逻辑都属于范围内；改动涉及其他产物负责的契约、表、模块或职责时按"越界改动"作为 P0/P1 问题报告。
+
+无方案时按 fast 通道处理，基于 scope / diff 判断是否超出低风险范围。无法定位 diff 或改动范围时停止。
+
 ## 工作重点
 
-可以参考本次 diff 或用户指定文件、对应功能目录下的 `0-context.md`、`1-plan.md`、`2-plan-review.md` 和历史 `3-code-review.md`；没有方案时按 fast 通道处理，基于 scope / diff 判断是否超出低风险范围。无法定位 diff 或改动范围时停止；评审中发现需求或范围问题，返回 `context-scan`；方案问题，返回 `plan-write` / `plan-review`；实现问题，返回 `code-implement`。
+评审中发现需求、方案或实现问题时，记录失败路径与影响并向调用方报告，由调用方决定回到哪一阶段。
 
 代码评审优先找事故风险，不做泛泛风格点评。
 
 重点关注：
 
 - 正确性：逻辑、边界、异常路径。
-- 与方案一致性：是否遗漏关键要求或绕开评审结论。
+- 与方案一致性：是否遗漏关键要求或绕开评审结论；PRD 模式下还包括是否遵守 blueprint 全局约束与产物契约边界。
 - 安全与权限：越权、注入、敏感信息泄露。
 - 健壮性：空值、非法输入、幂等、防重。
 - 性能与质量：N+1、循环查库、大结果集、重复代码。
@@ -29,7 +42,7 @@ description: 对代码改动进行后端事故风险评审，结果写入对应�
 
 ## 输出
 
-写入：`AI_DOC/features/<功能名>/3-code-review.md`
+写入：`<scope>/3-code-review.md`
 
 若文件不存在，创建文件头；若已存在，追加新一轮评审并保留历史。
 
@@ -43,4 +56,4 @@ description: 对代码改动进行后端事故风险评审，结果写入对应�
 
 ## 完成后建议
 
-独立触发本技能时，只提示下一步；被 auto-dev 流程调用时，返回主流程继续调度。通过时建议进入 `test-design-lite`；不通过时建议回到 `code-implement`。
+独立触发本技能时，只提示下一步；被编排流程调用时，返回主流程继续调度。通过时建议进入测试设计；不通过时建议回到实现阶段。

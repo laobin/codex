@@ -54,66 +54,16 @@ description: 自动化开发统一入口。用于用户要求自动开发、auto
 
 `progress.json` 用于记录状态、续跑、阻塞和建议动作。没有必要时不要让它主导实现方式；但进入自动化流程后，应保持状态可恢复。
 
-文件路径：
+文件路径：`AI_DOC/features/<功能名>/progress.json`
 
-```text
-AI_DOC/features/<功能名>/progress.json
-```
+**完整字段定义、枚举、状态转移和回退规则见 `skills/auto-dev/PROGRESS_SCHEMA.md`**（所有编排技能共享的单一权威）。本入口阶段只需关注：
 
-文件可以包含：
+- 分流完成时初始化基础字段，`current_stage = "routing"`、`current_status = "running"`。
+- `routing` 只表示主入口已完成分流，不是需要执行的阶段。
+- 转入具体流程线后，`current_stage` 改写为对应阶段名，由流程技能继续维护。
+- 长任务或会话中断时，把轻量 handoff 写入 `stage_history[].note`：当前目标、已改文件、未决问题、建议下一步。
 
-```json
-{
-  "feature_name": "<功能名>",
-  "mode": "fast|standard|full",
-  "created_at": "<ISO时间>",
-  "updated_at": "<ISO时间>",
-  "current_stage": "routing",
-  "last_success_stage": null,
-  "scope": null,
-  "plan_review_round": 0,
-  "code_review_round": 0,
-  "test_fix_round": 0,
-  "current_status": "running",
-  "upgraded_from": null,
-  "restart_from": null,
-  "recommended_next_action": "continue-current-flow",
-  "reason": "已完成分流，准备进入对应流程线",
-  "needs_user_decision": false,
-  "blocking_issues": [],
-  "stage_history": []
-}
-```
-
-`routing` 只表示主入口已完成分流，不是需要执行的阶段。
-
-关键字段约定：
-
-| 字段 | 说明 |
-|------|------|
-| `current_stage` | 当前状态或正在处理的阶段；初始为 `routing`，进入具体技能后再写阶段名 |
-| `last_success_stage` | 最后一个已完成阶段 |
-| `scope` | 当前确认的需求范围 |
-| `current_status` | `running` / `pending_fix` / `manual_required` / `completed` / `upgraded` |
-| `upgraded_from` | 发生升级时记录原流程线 |
-| `restart_from` | 升级或续跑时建议重新开始的阶段 |
-| `recommended_next_action` | 下一步建议动作 |
-| `reason` | 建议动作的原因 |
-| `needs_user_decision` | 是否需要用户决策 |
-| `blocking_issues` | 未解决问题 |
-| `stage_history` | 阶段记录 |
-
-`stage_history[]` 至少记录阶段、状态、时间和简短说明。状态可用：`started` / `success` / `blocked` / `failed` / `skipped`。
-
-长任务、批处理或上下文可能中断时，把轻量 handoff 写入 `stage_history[].note`：当前目标、已改文件、未决问题和建议下一步。
-
-状态更新时机：
-
-- 阶段开始。
-- 阶段完成。
-- 出现阻塞、失败或升级。
-- 问题修复后。
-- 流程完成。
+状态更新时机（每个流程通用）：阶段开始 / 阶段完成 / 出现阻塞、失败或升级 / 问题修复后 / 流程完成。
 
 ### 4. 选择并执行对应流程
 
@@ -124,7 +74,34 @@ AI_DOC/features/<功能名>/progress.json
 | full | `auto-dev-full` |
 | batch | `auto-dev-batch` |
 
-把需求描述、功能名、文档目录、progress 路径和是否无人值守传给对应流程即可。具体阶段由对应流程按风险决定，不要求补齐所有文档。
+把需求描述、功能名、文档目录、progress 路径、当前 scope 和是否无人值守传给对应流程即可。具体阶段由对应流程按风险决定，不要求补齐所有文档。
+
+### 4.1 scope 与命名约定
+
+所有非编排技能（plan-write / plan-review / code-implement / code-review / test-design-lite / test-run-lite 等）都在"当前 scope 目录"下读写。scope 分两层：
+
+| scope | 目录形态 | 使用场景 |
+|---|---|---|
+| feature 根 | `AI_DOC/features/<功能名>/` | fast / standard 全程；full 单产物路径；full PRD 路径的 blueprint 与集成验收阶段 |
+| 产物层 | `AI_DOC/features/<功能名>/deliverables/<n>-产物/` | full PRD 路径的产物循环阶段 |
+
+各层固定文档命名：
+
+| 文件 | 产出技能（角色） | 位置 |
+|---|---|---|
+| `0-context.md` | 上下文扫描 | feature 根 |
+| `blueprint.md` | PRD 整体设计 | feature 根（仅 PRD 路径） |
+| `blueprint-review.md` | blueprint 评审 | feature 根（仅 PRD 路径） |
+| `deliverables/00-overview/README.md` | PRD 产物总览 | feature 根下（仅 PRD 路径） |
+| `deliverables/<n>-产物/README.md` | 产物总览（由 blueprint 产出） | 产物层 |
+| `1-plan.md` | 方案撰写 | 当前 scope |
+| `2-plan-review.md` | 方案评审 | 当前 scope |
+| `3-code-review.md` | 代码评审 | 当前 scope |
+| `4-test-design-lite.md` | 测试设计 | 当前 scope |
+| `5-test-run-lite.md` | 测试执行 | 当前 scope |
+| `progress.json` | 流程状态 | feature 根（单一来源） |
+
+调用下游技能时，必须显式告知"当前 scope 目录"，下游不假设。跨 scope 回看（如产物层回看 feature 根的 `blueprint.md`）由各技能在工作 scope 章节自行声明，主入口不重复定义。
 
 ### 5. 最小完成定义
 

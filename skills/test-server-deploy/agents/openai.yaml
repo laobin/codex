@@ -1,0 +1,7 @@
+interface:
+  display_name: "Test Server Deploy"
+  short_description: "Update test-server projects through Deploy API"
+  default_prompt: "Use $test-server-deploy to update a test-server project through the Deploy API."
+
+policy:
+  allow_implicit_invocation: true
