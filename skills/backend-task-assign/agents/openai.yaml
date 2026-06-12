@@ -1,0 +1,4 @@
+interface:
+  display_name: "后端任务指派"
+  short_description: "创建后端组工作进展表任务记录并同步到指定飞书群聊通知"
+  default_prompt: "Use $backend-task-assign to assign a backend team task, create it in the progress table, and sync the backend squad chat."
